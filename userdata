@@ -1,3 +1,9 @@
+#!/bin/bash
+yum update -y
+yum install python3 python3-pip
+/bin/pip3 install Flask cryptography
+
+cat << EOF > /root/app.py
 from flask import Flask, make_response, request
 
 app = Flask(__name__)
@@ -28,3 +34,24 @@ def getcookie():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', ssl_context='adhoc', port=8443)
+EOF
+
+chmod +x /root/app.py
+
+cat << EOF > /etc/systemd/system/flask.service
+[Unit]
+Description=My flask service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/bin/python3 /root/app.py
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable flask.service
+systemctl start flask.service
