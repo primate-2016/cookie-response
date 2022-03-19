@@ -13,7 +13,7 @@ def hello_world():
 @app.route('/slot3')
 def setcookie():
 
-   slot = request.path
+   slot = request.path[1:]
    resp = make_response(f'<h1>Setting slot cookie to {slot}</h1>')
    resp.set_cookie('release_slot', slot)
    return resp
